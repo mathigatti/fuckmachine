@@ -4,17 +4,17 @@ WIP code for controlling a fuck machine
 
 ## Software
 
-`fuckmachine.py` will create an OSC server and regulate the voltage of the motor.
+`fuckmachine.ino` will create an OSC server and regulate the voltage of the motor.
 
-- Install requirements: `pip install -r requirements.txt`
+- Install Arduino IDE and this OSC libray: `https://github.com/CNMAT/OSC/tree/master`
 
-- Run: `python fuckmachine.py`
+- Using the Arduino IDE load fuckmachine.ino into the ESP8266
 
 Then you should be able to connect to the osc server using [this app](https://play.google.com/store/apps/details?id=com.ffsmultimedia.osccontroller) or a similar one.
 
 ## Hardware
 
-- Raspberry pi
+- ESP8266
 - L298N Driver
 - [Geared motors](http://www.ignismotor.com/DESKTOP/AR/motoreductor.html)
 - Laptop charger to power the geared motor with 24V
