@@ -1,15 +1,14 @@
 #ifdef ESP8266
-#include <ESP8266WiFi.h>
-#else
-#include <WiFi.h>
-#endif
 #include <WiFiUdp.h>
 #include <OSCMessage.h>
 #include <OSCBundle.h>
 #include <OSCData.h>
 
-// https://github.com/CNMAT/OSC/tree/master
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClientSecure.h> // Include this for WiFiClientSecure
 
+// https://github.com/CNMAT/OSC/tree/master
 
 char ssid[] = "internet cel";
 char pass[] = "1nt3rn3t";
@@ -28,6 +27,8 @@ void setup() {
 
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
+  analogWriteRange(1024);
+  analogWriteFreq(20000):
   analogWrite(en, 1023); // 10% duty cycle (since the ESP uses 10 bit PWM, 1023 is full throttle)
 
   Serial.begin(115200);
@@ -56,6 +57,80 @@ void setup() {
 #else
   Serial.println(Udp.localPort());
 #endif
+}
+
+void postIP() {
+  #ifdef ESP8266
+
+  String postData = String("{\"USER_ID\":\"test1\", \"IP\":\"") + WiFi.localIP().toString() + "\"}";
+  String host = "us-central1-my-project-1470448662992.cloudfunctions.net";
+  const int port = 443;  // HTTPS port
+  WiFiClientSecure client;
+
+  if (client.connect(host.c_str(), port)) {
+      client.print(String("POST /fuckmachine/ HTTP/1.1\r\n") +
+                  "Host: " + host + "\r\n" +
+                  "Connection: close\r\n" +
+                  "Content-Type: application/json\r\n" +
+                  "Content-Length: " + postData.length() + "\r\n" +
+                  "\r\n" +
+                  postData + "\r\n");             
+  } else {
+    Serial.println("No me pude conectar :(");
+  }
+
+  delay(10);  // Give server some time to receive
+  
+  while (client.connected()) {
+    String line = client.readStringUntil('\n');
+    if (line == "\r") {
+      break;
+    }
+  }
+
+  String response = client.readStringUntil('\n');
+  Serial.println(response);
+
+  #endif
+}
+
+void getWiFiCredentials() {
+  #ifdef ESP8266
+  HTTPClient http;
+  WiFiClient client;
+  http.begin(client, String("https://us-central1-my-project-1470448662992.cloudfunctions.net/fuckmachine-wifi/?USER_ID=test1"));
+  int httpResponseCode = http.GET();
+  if(httpResponseCode>0){
+    String response = http.getString();
+    Serial.println(httpResponseCode);
+    Serial.println(response);
+    
+    // Suponiendo que la respuesta tiene el formato {"SSID":"mySSID", "PASS":"myPassword"}
+    int ssidStart = response.indexOf("\"SSID\":\"") + 8;
+    int ssidEnd = response.indexOf("\"", ssidStart);
+    int passStart = response.indexOf("\"PASS\":\"") + 8;
+    int passEnd = response.indexOf("\"", passStart);
+    
+    if(ssidStart > 7 && ssidEnd > ssidStart && passStart > 7 && passEnd > passStart) {
+      response.substring(ssidStart, ssidEnd).toCharArray(ssid, sizeof(ssid));
+      response.substring(passStart, passEnd).toCharArray(pass, sizeof(pass));
+
+      // Guardar las credenciales en el sistema de archivos
+      File configFile = SPIFFS.open("/config.txt", "w");
+      if(!configFile) {
+        Serial.println("Failed to open config file for writing");
+        return;
+      }
+      configFile.println(ssid);
+      configFile.println(pass);
+      configFile.close();
+    }
+  } else {
+    Serial.print("Error on sending GET: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();
+  #endif
 }
 
 void toggleHandler(OSCMessage &msg) {
