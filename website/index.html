@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración WiFi</title>
+</head>
+<body>
+    <h1>Configuración WiFi</h1>
+
+    <form id="wifiForm">
+        <label for="userId">USER_ID:</label>
+        <input type="text" id="userId" required>
+        
+        <label for="ssid">SSID:</label>
+        <input type="text" id="ssid" required>
+        
+        <label for="pass">PASS:</label>
+        <input type="text" id="pass" required>
+        
+        <input type="button" value="Actualizar" onclick="updateWiFi()">
+        <input type="button" value="Consultar IP" onclick="getIP()">
+    </form>
+
+    <p id="ipAddress">IP: No consultado aún</p>
+
+    <script>
+        const wifi_url = "https://us-central1-my-project-1470448662992.cloudfunctions.net/fuckmachine-wifi"; // Replace with your Cloud Function URL
+        const ip_url = "https://us-central1-my-project-1470448662992.cloudfunctions.net/fuckmachine"; // Replace with your Cloud Function URL
+
+        function updateWiFi() {
+            const userId = document.getElementById("userId").value;
+            const ssid = document.getElementById("ssid").value;
+            const pass = document.getElementById("pass").value;
+
+            fetch(`${wifi_url}/?USER_ID=${userId}&SSID=${ssid}&PASS=${pass}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                alert("Error al actualizar: " + error);
+            });
+        }
+
+        function getIP() {
+            const userId = document.getElementById("userId").value;
+
+            fetch(`${ip_url}/?USER_ID=${userId}`, {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("ipAddress").innerText = "IP: " + data.IP;
+            })
+            .catch(error => {
+                alert("Error al consultar IP: " + error);
+            });
+        }
+    </script>
+</body>
+</html>
