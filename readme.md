@@ -14,21 +14,12 @@ Then you should be able to connect to the osc server using [this app](https://pl
 
 ## Hardware
 
-- Electronics by [Mathi Gatti](https://mathigatti.com)
+- Electronics
     - ESP8266
     - L298N Driver
     - [5v regulator, step down dc-dc transformer](https://tienda.starware.com.ar/producto/modulo-regulador-reductor-voltaje-diymall-dc-dc-step-down-usb-8-32v-a-5v-3a-dcp/)
     - Laptop charger to power the geared motor with 24V
     - Antenna: https://www.instructables.com/External-Antenna-for-ESP8266/
-
-- Mechanics by [KinkyToyMaker](https://www.instagram.com/kinkytoymaker/)
-    - [Geared motors](http://www.ignismotor.com/DESKTOP/AR/motoreductor.html)
-    - Corredora lineal
-        - https://ingia.com.ar/producto/lmk8uu/
-    - Caja de hierro hecha en la [escueladeherrerialesbiana](https://www.instagram.com/escueladeherrerialesbiana/)
-    - Partes de plastico: Modeladas en 3D e impresas
-    - Varillas de aluminio
-    - Madera
 
 ## Related Links
 
